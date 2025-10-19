@@ -1,0 +1,78 @@
+[gd_scene load_steps=4 format=3 uid="uid://b8cu70nys5df8"]
+
+[ext_resource type="Script" uid="uid://duxdqhw2la5h8" path="res://addons/snake_2d/snake_body_2d.gd" id="1_s2vjr"]
+[ext_resource type="Script" uid="uid://cs3p4fag3016h" path="res://addons/snake_2d/snake_sprite_2d.gd" id="3_8cuxw"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_tdvnt"]
+
+[node name="TestScene" type="Node2D"]
+
+[node name="Camera2D" type="Camera2D" parent="."]
+
+[node name="SnakeBody2D" type="CharacterBody2D" parent="."]
+motion_mode = 1
+script = ExtResource("1_s2vjr")
+metadata/_custom_type_script = "uid://duxdqhw2la5h8"
+
+[node name="SnakeSprite2D" type="Sprite2D" parent="SnakeBody2D"]
+top_level = true
+scale = Vector2(0.2, 0.2)
+script = ExtResource("3_8cuxw")
+metadata/_custom_type_script = "uid://cs3p4fag3016h"
+
+[node name="SnakeSprite2D2" type="Sprite2D" parent="SnakeBody2D"]
+top_level = true
+scale = Vector2(0.2, 0.2)
+script = ExtResource("3_8cuxw")
+metadata/_custom_type_script = "uid://cs3p4fag3016h"
+
+[node name="SnakeSprite2D3" type="Sprite2D" parent="SnakeBody2D"]
+top_level = true
+scale = Vector2(0.2, 0.2)
+script = ExtResource("3_8cuxw")
+metadata/_custom_type_script = "uid://cs3p4fag3016h"
+
+[node name="SnakeSprite2D4" type="Sprite2D" parent="SnakeBody2D"]
+top_level = true
+scale = Vector2(0.2, 0.2)
+script = ExtResource("3_8cuxw")
+metadata/_custom_type_script = "uid://cs3p4fag3016h"
+
+[node name="SnakeSprite2D5" type="Sprite2D" parent="SnakeBody2D"]
+top_level = true
+scale = Vector2(0.2, 0.2)
+script = ExtResource("3_8cuxw")
+metadata/_custom_type_script = "uid://cs3p4fag3016h"
+
+[node name="SnakeSprite2D6" type="Sprite2D" parent="SnakeBody2D"]
+top_level = true
+scale = Vector2(0.2, 0.2)
+script = ExtResource("3_8cuxw")
+metadata/_custom_type_script = "uid://cs3p4fag3016h"
+
+[node name="SnakeSprite2D7" type="Sprite2D" parent="SnakeBody2D"]
+top_level = true
+scale = Vector2(0.2, 0.2)
+script = ExtResource("3_8cuxw")
+metadata/_custom_type_script = "uid://cs3p4fag3016h"
+
+[node name="SnakeSprite2D8" type="Sprite2D" parent="SnakeBody2D"]
+top_level = true
+scale = Vector2(0.2, 0.2)
+script = ExtResource("3_8cuxw")
+metadata/_custom_type_script = "uid://cs3p4fag3016h"
+
+[node name="SnakeSprite2D9" type="Sprite2D" parent="SnakeBody2D"]
+top_level = true
+scale = Vector2(0.2, 0.2)
+script = ExtResource("3_8cuxw")
+metadata/_custom_type_script = "uid://cs3p4fag3016h"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="SnakeBody2D"]
+shape = SubResource("CircleShape2D_tdvnt")
+
+[node name="Line2D" type="Line2D" parent="SnakeBody2D"]
+joint_mode = 2
+begin_cap_mode = 2
+end_cap_mode = 2
+antialiased = true
