@@ -21,8 +21,6 @@ A sinewave is sampled for each SnakeSprite2D.
 The resulting position is rotated and becomes an offset from the center line, that is then applied to the SnakeSprite2D.
 The sprites now follow the body, like a snake. 
 
-![Sine follow path](./images/sine.png)
-
 Lastly, effects were added like contraction and jitter to make the movement more interesting and fun.
 
 ## Usage

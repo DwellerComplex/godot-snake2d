@@ -27,6 +27,8 @@ class_name SnakeBody2D
 @export var contraction = 20.0
 ##Speed based stretching. Makes the snake less wavy the closer it is to standing still.
 @export_range(0.0, 1.0, 0.01) var rest_stretching_factor = 0.5
+##Use small numbers like 0.01 for a more floaty effect.
+@export var parts_gravity_factor = 0.0
 @export var parts_seperation = 7
 ##The snake tries to move away from itself. 
 ##Play around with the values or set number_parts_calculating_min_angle to 0 if it produces strange movement.
@@ -34,7 +36,6 @@ class_name SnakeBody2D
 @export var parts_min_angle_speed = 20
 ##Set to 0 to ignore min angle and allow the snake to move into itself. Set to high number to include all parts.
 @export var number_parts_calculating_min_angle = 20
-
 @export var frequency_contraction = 0.02
 ##How much the snakes current velocity contributes to the contraction speed.
 @export var speed_contraction_factor = 0.3
@@ -90,8 +91,9 @@ func _physics_process(delta):
 	#Code for Line2D.
 	if has_node("Line2D"):
 		var curve = Curve2D.new()
-		for part in body:
-			curve.add_point(part.global_position)
+		for i in range(1, body.size()):
+			#The first point is self and not body so we skip it
+			curve.add_point(body[i].global_position)
 		$Line2D.points = curve.get_baked_points()
 		$Line2D.global_position = Vector2.ZERO
 		$Line2D.global_rotation = 0.0
@@ -99,14 +101,19 @@ func _physics_process(delta):
 #Center line is the snake "spine" and adds the follow movement to the snake.
 #It works like a simple chain; B rotates and moves towards A. Then C rotates and moves towards B...
 func update_center_line(delta):
+	#Get gravity from settings.
+	var gravity = get_gravity() * parts_gravity_factor * delta 
 	#start the line at self.
 	body_center_line[0] = global_position
 	
 	for i in range(1, body.size()):
 		#"Body parts" are the SnakeSprite2Ds.
 		var body_part_ahead = body[i-1]
-		var body_part_center = body_center_line[i]
+		var body_part_center = body_center_line[i] 
 		var body_part_ahead_center = body_center_line[i-1]
+		
+		#Apply gravity.
+		body_part_center += gravity
 		
 		var target_dir = (body_part_ahead_center - body_part_center).normalized()
 		
@@ -115,7 +122,6 @@ func update_center_line(delta):
 			target_dir = Vector2.RIGHT
 		
 		#Do a min angle fix. 
-		#Making target_dir towards the actual bodypart instead of the center line gives more accurate results.
 		if i < number_parts_calculating_min_angle:
 			var ahead_forward_dir = Vector2.RIGHT.rotated(body_part_ahead.global_rotation)
 			target_dir = min_angle_fix(target_dir, ahead_forward_dir, delta)
