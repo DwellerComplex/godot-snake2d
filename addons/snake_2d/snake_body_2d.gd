@@ -25,28 +25,29 @@ class_name SnakeBody2D
 @export_group("Sample Curves")
 @export var amplitude_curve:Curve = preload("snake_2d_curve.tres")
 @export var amplitude = 8.0
-@export_range(0.0, 1.0, 0.01) var wave_frequency = 0.1
+@export_range(0.0, 0.5, 0.01, "or_greater") var wave_frequency = 0.1
 ##How much the snakes current velocity contributes to the wave speed.
 @export var wave_speed_factor = 0.15
-##Minimum wavyness. Set to 0 for no wave when the snake is not moving forward (0 velocity).
+##Minimum waviness. Set to 0 for no wave when the snake is not moving forward (0 velocity).
 @export var wave_speed_min = 4.0
 @export var contraction = 20.0
-@export_range(0.0, 1.0, 0.01) var contraction_frequency = 0.02
+@export_range(0.0, 0.3, 0.01, "or_greater") var contraction_frequency = 0.02
 ##How much the snakes current velocity contributes to the contraction speed.
 @export var contraction_speed_factor = 0.3
 ##Minimum contraction. Set to 0 for no contraction when the snake is not moving forward (0 velocity).
 @export var contraction_speed_min = 0.1
 
 @export_group("Body Parts")
-##Set to false to ignore parts_min_angle and allow the snake to move into itself. 
+##Set to false to ignore max_bend_angle and allow the snake to move into itself. 
 ##Set to true to preventing the snake from bending too much.
-@export var unbend_small_angles = true
-##If parts_min_angle is smaller than the SnakeSprite2Ds rotations to each other, they try to "stretch out" the snake.
-##Preventing the snake from bending too much.
-@export_range(0, 360) var parts_min_angle:int = 20 
+@export var unbend_snake = true
 ##The speed at which the SnakeSprite2Ds rotate away from each other.
-@export var parts_min_angle_speed = 20
-@export var parts_seperation = 7
+@export var unbend_speed = 20
+##If max_bend_angle is smaller than the SnakeSprite2Ds rotations to each other, they try to "stretch out" the snake.
+##Preventing the snake from bending too much.
+##So, smaller angle means less bending, bigger angle means more bending.
+@export_range(0, 360) var max_bend_angle:int = 20 
+@export var parts_separation = 7
 
 @export_group("Extra")
 ##Use small numbers like 0.01 for a more floaty effect.
@@ -90,7 +91,7 @@ func _physics_process(delta):
 	velocity = velocity.limit_length(max_speed)
 	
 	move_and_slide()
-	#Have two similiar functions here to make the code more understandable and doing one thing at a time.
+	#Have two similar functions here to make the code more understandable and doing one thing at a time.
 	#Could combine them with a single for loop.
 	update_center_line(delta)
 	update_body(delta)
@@ -99,7 +100,7 @@ func _physics_process(delta):
 	if has_node("Line2D"):
 		var curve = Curve2D.new()
 		for i in range(1, body.size()):
-			#The first point is self and not body so we skip it
+			#The first point is self and not body so we skip it.
 			curve.add_point(body[i].global_position)
 		$Line2D.points = curve.get_baked_points()
 		$Line2D.global_position = Vector2.ZERO
@@ -129,11 +130,11 @@ func update_center_line(delta):
 			target_dir = Vector2.RIGHT
 		
 		#Do a min angle fix. 
-		if unbend_small_angles == true:
+		if unbend_snake == true:
 			var ahead_forward_dir = Vector2.RIGHT.rotated(body_part_ahead.global_rotation)
 			target_dir = min_angle_fix(target_dir, ahead_forward_dir, delta)
 		
-		body_center_line[i] = body_part_ahead_center - target_dir * parts_seperation
+		body_center_line[i] = body_part_ahead_center - target_dir * parts_separation
 		
 #This function adds wavy movement and offsets the body from the center line.
 func update_body(delta):
@@ -165,7 +166,7 @@ func update_body(delta):
 #we take the target direction of the body part and check it with dot- and cross products against the forward vector of the body part ahead. 
 func min_angle_fix(target_dir, ahead_forward_dir, delta):
 	#target_dir and ahead_forward_dir are normalized vectors.
-	#Dot product gives us the angle between the two vectors in the form -1 (oposite direction) to 1 (same direction) (1 because they have a length of 1).
+	#Dot product gives us the angle between the two vectors in the form -1 (opposite direction) to 1 (same direction) (1 because they have a length of 1).
 	var dot_product = target_dir.dot(ahead_forward_dir)
 	#This difference between normalized vectors can also be represented as an angle.
 	#Acos converts the dot product to an angle.
@@ -173,14 +174,14 @@ func min_angle_fix(target_dir, ahead_forward_dir, delta):
 	#The cross product tells us if target_dir is to the left or to the right of ahead_forward_dir, enabling us to rotate in the correct direction.
 	var cross_product = target_dir.cross(ahead_forward_dir)
 
-	if angle_to_straight > parts_min_angle:
+	if angle_to_straight > max_bend_angle:
 		var target_dir_straightened
 		if cross_product > 0:
-			target_dir_straightened = ahead_forward_dir.rotated(deg_to_rad(-parts_min_angle))
+			target_dir_straightened = ahead_forward_dir.rotated(deg_to_rad(-max_bend_angle))
 		else:
-			target_dir_straightened = ahead_forward_dir.rotated(deg_to_rad(parts_min_angle))
+			target_dir_straightened = ahead_forward_dir.rotated(deg_to_rad(max_bend_angle))
 		
-		target_dir = target_dir.slerp(target_dir_straightened, delta * parts_min_angle_speed)
+		target_dir = target_dir.slerp(target_dir_straightened, delta * unbend_speed)
 		
 	return target_dir
 		
