@@ -18,7 +18,7 @@ It is optional and not needed for the plugin to work.
 The plugin is located in the "addons/snake_2d" folder and works just like a standard plugin for Godot.
 
 #### New project
-If you are starting from scratch or just want to try out the demo scene you can download the whole repository, unzip it and import it in the Godot project manager.
+If you are starting from scratch or just want to try out the demo scene you can download the project, unzip it and import it in the Godot project manager.
 
 #### Existing project
 Download the project, unzip it and place the addons folder with its contents inside your Godot projects root directory.
