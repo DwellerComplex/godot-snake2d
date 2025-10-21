@@ -126,7 +126,7 @@ func update_center_line(delta):
 	#The more velocity the more seperation of body parts.
 	var parts_separation_clamped = parts_separation * maxf(velocity.length() / max_speed, 1.0 - compression_factor)
 	
-	#start the line at self.
+	#Start the line at self.
 	body_center_line[0] = global_position
 	
 	for i in range(1, body.size()):
@@ -177,7 +177,7 @@ func update_body(delta):
 #Prevent the snake from bending too much. 
 #if you move it right and then directly left you will notice how it moves inside itself. 
 #We can fix it by recalculating the target direction if the angle is too small; 
-#we take the target direction of the body part and check it with dot- and cross products against the forward vector of the body part ahead. 
+#We take the target direction of the body part and check it with dot- and cross products against the forward vector of the body part ahead. 
 func unbend(target_dir, ahead_forward_dir, delta):
 	#target_dir and ahead_forward_dir are normalized vectors.
 	#Dot product gives us the angle between the two vectors in the form -1 (opposite direction) to 1 (same direction) (1 because they have a length of 1).
@@ -236,6 +236,6 @@ func _get_configuration_warnings() -> PackedStringArray:
 			break
 			
 	if !found_body:
-		warnings.append("Add SnakeSprite2D nodes as children to this node for visualizing the snake.")
+		warnings.append("Add SnakeSprite2D nodes as children to this node to make a snake.")
 	
 	return warnings
