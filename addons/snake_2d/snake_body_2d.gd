@@ -24,16 +24,18 @@ class_name SnakeBody2D
 
 @export_group("Sample Curves")
 @export var amplitude_curve:Curve = preload("snake_2d_curve.tres")
+##Amplitude amount. 
 @export var amplitude = 8.0
 @export_range(0.0, 0.5, 0.01, "or_greater") var wave_frequency = 0.1
 ##How much the snakes current velocity contributes to the wave speed.
-@export var wave_speed_factor = 0.15
+@export_range(0.0, 0.5, 0.01, "or_greater") var wave_speed_factor = 0.15
 ##Minimum waviness. Set to 0 for no wave when the snake is not moving forward (0 velocity).
 @export var wave_speed_min = 4.0
-@export var contraction = 20.0
+##Contraction amount. Around 20 gives a nice effect.
+@export var contraction = 0.0
 @export_range(0.0, 0.3, 0.01, "or_greater") var contraction_frequency = 0.02
 ##How much the snakes current velocity contributes to the contraction speed.
-@export var contraction_speed_factor = 0.3
+@export_range(0.0, 1.0, 0.01, "or_greater") var contraction_speed_factor = 0.3
 ##Minimum contraction. Set to 0 for no contraction when the snake is not moving forward (0 velocity).
 @export var contraction_speed_min = 0.1
 
@@ -47,13 +49,19 @@ class_name SnakeBody2D
 ##Preventing the snake from bending too much.
 ##So, smaller angle means less bending, bigger angle means more bending.
 @export_range(0, 360) var max_bend_angle:int = 20 
+##Distance between SnakeSprite2Ds.
 @export var parts_separation = 7
 
 @export_group("Extra")
-##Use small numbers like 0.01 for a more floaty effect.
-@export var gravity_factor = 0.0
-##Speed based stretching. Makes the snake less wavy the closer it is to standing still.
-@export_range(0.0, 1.0, 0.01) var rest_stretching_factor = 0.5
+##Uncheck to override the global gravity completely with gravity_factor.
+@export var use_project_settings_gravity = true
+##Use small numbers like 0.01 for a more floaty effect if using global gravity. If 'x' is not working, make sure it is not 0 in project settings.
+@export var gravity_factor = Vector2.ZERO
+##Speed based amplitude. Makes the snake less wavy the closer it is to standing still.
+@export_range(0.0, 1.0, 0.01) var wave_damping_factor = 0.5
+##Speed based parts separation. Makes the snake shorter the closer it is to standing still. 
+##Make speed trails by maxing wave_damping_factor and compression_factor.
+@export_range(0.0, 0.9, 0.01) var compression_factor = 0.0
 ##Adds some fun randomness to the SnakeSprite2D rotations.
 @export_range(0.0, 1.0, 0.01) var random_jitter_factor = 0.0
 
@@ -98,19 +106,26 @@ func _physics_process(delta):
 		
 	#Code for Line2D.
 	if has_node("Line2D"):
+		var line = $Line2D
 		var curve = Curve2D.new()
 		for i in range(1, body.size()):
 			#The first point is self and not body so we skip it.
 			curve.add_point(body[i].global_position)
-		$Line2D.points = curve.get_baked_points()
-		$Line2D.global_position = Vector2.ZERO
-		$Line2D.global_rotation = 0.0
+		line.points = curve.get_baked_points()
+		line.global_position = Vector2.ZERO
+		line.global_rotation = 0.0
 	
 #Center line is the snake "spine" and adds the follow movement to the snake.
 #It works like a simple chain; B rotates and moves towards A. Then C rotates and moves towards B...
 func update_center_line(delta):
-	#Get gravity from settings.
-	var gravity = get_gravity() * gravity_factor * delta 
+	#Get gravity.
+	var gravity = gravity_factor * delta 
+	if use_project_settings_gravity == true:
+		gravity *= get_gravity()
+		
+	#The more velocity the more seperation of body parts.
+	var parts_separation_clamped = parts_separation * maxf(velocity.length() / max_speed, 1.0 - compression_factor)
+	
 	#start the line at self.
 	body_center_line[0] = global_position
 	
@@ -129,12 +144,11 @@ func update_center_line(delta):
 		if target_dir == Vector2.ZERO:
 			target_dir = Vector2.RIGHT
 		
-		#Do a min angle fix. 
 		if unbend_snake == true:
 			var ahead_forward_dir = Vector2.RIGHT.rotated(body_part_ahead.global_rotation)
-			target_dir = min_angle_fix(target_dir, ahead_forward_dir, delta)
+			target_dir = unbend(target_dir, ahead_forward_dir, delta)
 		
-		body_center_line[i] = body_part_ahead_center - target_dir * parts_separation
+		body_center_line[i] = body_part_ahead_center - target_dir * parts_separation_clamped
 		
 #This function adds wavy movement and offsets the body from the center line.
 func update_body(delta):
@@ -151,7 +165,7 @@ func update_body(delta):
 		wave = wave.rotated(body_part.global_rotation)
 		
 		#The more velocity the bigger the wave.
-		wave = wave * maxf(velocity.length() / max_speed, 1.0 - rest_stretching_factor)
+		wave *= maxf(velocity.length() / max_speed, 1.0 - wave_damping_factor)
 		
 		#Rotate and position away from center line.
 		body_part.global_rotation = (body_part_ahead_center - body_part_center).normalized().angle()
@@ -164,7 +178,7 @@ func update_body(delta):
 #if you move it right and then directly left you will notice how it moves inside itself. 
 #We can fix it by recalculating the target direction if the angle is too small; 
 #we take the target direction of the body part and check it with dot- and cross products against the forward vector of the body part ahead. 
-func min_angle_fix(target_dir, ahead_forward_dir, delta):
+func unbend(target_dir, ahead_forward_dir, delta):
 	#target_dir and ahead_forward_dir are normalized vectors.
 	#Dot product gives us the angle between the two vectors in the form -1 (opposite direction) to 1 (same direction) (1 because they have a length of 1).
 	var dot_product = target_dir.dot(ahead_forward_dir)
@@ -189,6 +203,7 @@ func min_angle_fix(target_dir, ahead_forward_dir, delta):
 func sample_wave_and_contraction(offset):
 	var amplitude_shaven = amplitude * amplitude_curve.sample(float(offset) / body.size()) 
 	
+	#Equation is sin(frequency * time * 2.0 * PI) * amplitude.
 	var x = sin(contraction_frequency * (time_contraction - offset) * 2.0 * PI) * contraction
 	var y = sin(wave_frequency * (time_wave - offset) * 2.0 * PI) * amplitude_shaven
 	
