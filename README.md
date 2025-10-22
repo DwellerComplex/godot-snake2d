@@ -1,6 +1,8 @@
 # Snake 2D for Godot
 Snake 2D is a Godot Engine (v4.5.1) plugin for 2D snake-like movement.
 
+![Cool Wiggler](./images/cover.png)
+
 Cool Wiggler | Leviathan | Restless Thing
 --- | --- | ---
 ![Cool Wiggler](./images/cool_wiggler.gif) | ![Leviathan](./images/leviathan.gif) | ![Restless Thing](./images/restless_thing.gif)
