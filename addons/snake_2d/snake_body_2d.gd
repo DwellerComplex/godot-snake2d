@@ -12,9 +12,8 @@ extends CharacterBody2D
 class_name SnakeBody2D
 
 @export_group("Arrive")
-##A value of false enables to set target_position to something else outside of this script.
-@export var follow_mouse = true
-@export var target_position = Vector2.ZERO
+##Defaults to mouse position if no node is assigned. 
+@export var target_node:Node2D
 @export var arrive_distance = 10
 @export var arrive_slowdown_distance = 200
 @export var arrive_slowdown_factor = 0.1
@@ -54,8 +53,8 @@ class_name SnakeBody2D
 
 @export_group("Extra")
 ##Uncheck to override the global gravity completely with gravity_factor.
-@export var use_project_settings_gravity = true
-##Use small numbers like 0.01 for a more floaty effect if using global gravity. If 'x' is not working, make sure it is not 0 in project settings.
+@export var use_project_settings_gravity = false
+##Use small numbers like 0.01 for a more floaty effect if using global gravity. If 'x' is not working, make sure it is not 0 in the project settings.
 @export var gravity_factor = Vector2.ZERO
 ##Speed based amplitude. Makes the snake less wavy the closer it is to standing still.
 @export_range(0.0, 1.0, 0.01) var wave_damping_factor = 0.5
@@ -89,9 +88,10 @@ func _physics_process(delta):
 	if Engine.is_editor_hint():
 		return
 	
-	#Change target position in a parent node to follow other nodes like player or enemies.
-	if follow_mouse:
-		target_position = get_global_mouse_position()
+	#Set target_position to target_node. Defaults to mouse position if there is no target_node.
+	var target_position = get_global_mouse_position()
+	if is_instance_valid(target_node):
+		target_position = target_node.global_position
 	
 	look_at(target_position)
 	var acceleration = arrive(target_position, delta)

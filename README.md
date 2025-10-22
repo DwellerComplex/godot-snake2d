@@ -29,6 +29,7 @@ Download the project, unzip it and place the addons folder with its contents ins
 Then go to "Project/Project Settings/Plugins" and enable the plugin.
 
 ## Usage
+Follow the following steps to use the plugin:
 1. Add a SnakeBody2D node to a scene. 
 2. Add multiple SnakeSprite2D nodes as children to the SnakeBody2D node.
 3. Add some textures to the sprites and run the scene to test it.
@@ -36,8 +37,9 @@ Then go to "Project/Project Settings/Plugins" and enable the plugin.
 Play around with the exported values in SnakeBody2D to get the desired movement.
 
 #### Steering
-Uncheck SnakeBody2D.follow_mouse.
-Define SnakeBody2D.target_position in a parent node to follow enemies or the player or any other position / node.
+The SnakeBody2D node has a target_node property. Assign a node to it and the snake will follow the assigned node.
+You can for example make a snake follow another snake. 
+If no target_node is assigned, it will default to target the mouse position.
 
 #### Line2D
 Want a Line2D instead of sprites? Add a Line2D node as child of SnakeBody2D.
