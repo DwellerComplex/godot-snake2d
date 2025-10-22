@@ -1,4 +1,4 @@
-@tool
+@icon("./snake_body_2d_icon.svg")
 extends CharacterBody2D
 
 #Copyright (c) 2025 DwellerComplex (Crumblebit www.crumblebit.com) under MIT license.
@@ -84,10 +84,6 @@ func _ready() -> void:
 	body_center_line.resize(body.size())
 	
 func _physics_process(delta):
-	#Do not run physics process if in editor (only when playing).
-	if Engine.is_editor_hint():
-		return
-	
 	#Set target_position to target_node. Defaults to mouse position if there is no target_node.
 	var target_position = get_global_mouse_position()
 	if is_instance_valid(target_node):
@@ -224,18 +220,3 @@ func arrive(target : Vector2, delta):
 	target_acceleration = (desired_velocity - velocity)/delta * arrive_slowdown_factor
 		
 	return target_acceleration
-
-#A tool function to display configuration warnings.
-func _get_configuration_warnings() -> PackedStringArray:
-	var warnings = []
-	
-	var found_body = false
-	for child in get_children():
-		if child is SnakeSprite2D:
-			found_body = true
-			break
-			
-	if !found_body:
-		warnings.append("Add SnakeSprite2D nodes as children to this node to make a snake.")
-	
-	return warnings

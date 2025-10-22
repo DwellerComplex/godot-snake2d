@@ -14,7 +14,3 @@ config/name="Snake2D"
 run/main_scene="uid://b8cu70nys5df8"
 config/features=PackedStringArray("4.5", "Forward Plus")
 config/icon="res://icon.svg"
-
-[editor_plugins]
-
-enabled=PackedStringArray("res://addons/snake_2d/plugin.cfg")

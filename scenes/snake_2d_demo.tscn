@@ -11,14 +11,9 @@
 
 [node name="SnakeBody2D" type="CharacterBody2D" parent="."]
 motion_mode = 1
+velocity = Vector2(-395.9077, -56.989677)
 script = ExtResource("1_s2vjr")
 metadata/_custom_type_script = "uid://duxdqhw2la5h8"
-
-[node name="SnakeSprite2D" type="Sprite2D" parent="SnakeBody2D"]
-top_level = true
-scale = Vector2(0.2, 0.2)
-script = ExtResource("3_8cuxw")
-metadata/_custom_type_script = "uid://cs3p4fag3016h"
 
 [node name="SnakeSprite2D2" type="Sprite2D" parent="SnakeBody2D"]
 top_level = true
@@ -63,6 +58,12 @@ script = ExtResource("3_8cuxw")
 metadata/_custom_type_script = "uid://cs3p4fag3016h"
 
 [node name="SnakeSprite2D9" type="Sprite2D" parent="SnakeBody2D"]
+top_level = true
+scale = Vector2(0.2, 0.2)
+script = ExtResource("3_8cuxw")
+metadata/_custom_type_script = "uid://cs3p4fag3016h"
+
+[node name="SnakeSprite2D" type="Sprite2D" parent="SnakeBody2D"]
 top_level = true
 scale = Vector2(0.2, 0.2)
 script = ExtResource("3_8cuxw")
