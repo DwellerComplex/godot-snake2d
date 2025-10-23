@@ -22,6 +22,7 @@ It is optional and not needed for the add-on to work.
 
 ## How to install
 The add-on is located in the "addons/snake_2d" folder and works just like a standard add-on for Godot.
+The downloadable zip-file can be found under "Releases" in the "About" section on GitHub.
 
 #### New project
 If you are starting from scratch or just want to try out the demo scene you can download the project, unzip it and import it in the Godot project manager.
@@ -41,6 +42,16 @@ Play around with the exported values in SnakeBody2D to get the desired movement.
 The SnakeBody2D node has a target_node property. Assign a node to it and the snake will follow the assigned node.
 You can for example make a snake follow another snake. 
 If no target_node is assigned, it will default to target the mouse position.
+
+#### Trails
+There is no pinning functionality in the SnakeBody2D but the properties used in the SnakeBody2D.arrive() function can be changed to work almost like a pin.
+I found the following values to work ok:
+* Assign a Target Node where the trail should attach.
+* Arrive Distance = 5.
+* Arrive Slowdown Distance = 10. Should always be higher than Arrive Distance.
+* Arrive Slowdown Factor = 20.
+* This can be a bit tricky but adjust Max Speed depending on how fast the body moves.
+Then adjust the extra properties for damping and compression so that the trail shortens as the snake slows down.
 
 #### Line2D
 Want a Line2D instead of sprites? Add a Line2D node as child of SnakeBody2D.

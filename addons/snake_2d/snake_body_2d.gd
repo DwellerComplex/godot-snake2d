@@ -14,9 +14,12 @@ class_name SnakeBody2D
 @export_group("Arrive")
 ##Defaults to mouse position if no node is assigned. 
 @export var target_node:Node2D
+##Distance from target where the snake "has arrived" and comes to a stop.
 @export var arrive_distance = 10
+##Distance from target where the snake begins to slow down. Should always be higher than Arrive Distance.
 @export var arrive_slowdown_distance = 200
-@export var arrive_slowdown_factor = 0.1
+##A more aggresive slowdown factor to avoid overshooting the target.
+@export var arrive_slowdown_factor = 5
 
 @export var max_force = 100000
 @export var max_speed = 400
@@ -59,7 +62,6 @@ class_name SnakeBody2D
 ##Speed based amplitude. Makes the snake less wavy the closer it is to standing still.
 @export_range(0.0, 1.0, 0.01) var wave_damping_factor = 0.5
 ##Speed based parts separation. Makes the snake shorter the closer it is to standing still. 
-##Make speed trails by maxing wave_damping_factor and compression_factor.
 @export_range(0.0, 0.9, 0.01) var compression_factor = 0.0
 ##Adds some fun randomness to the SnakeSprite2D rotations.
 @export_range(0.0, 1.0, 0.01) var random_jitter_factor = 0.0
@@ -91,7 +93,7 @@ func _physics_process(delta):
 	
 	look_at(target_position)
 	var acceleration = arrive(target_position, delta)
-	velocity += acceleration.limit_length(max_force) * delta
+	velocity += acceleration.limit_length(max_force) 
 	velocity = velocity.limit_length(max_speed)
 	
 	move_and_slide()
@@ -217,6 +219,9 @@ func arrive(target : Vector2, delta):
 	else:
 		desired_velocity = to_target.normalized() * max_speed * (distance / arrive_slowdown_distance)
 	desired_velocity = desired_velocity.limit_length(max_speed)
-	target_acceleration = (desired_velocity - velocity)/delta * arrive_slowdown_factor
+	
+	target_acceleration = (desired_velocity - velocity) 
+	#No idea if this is correct but it seems to work...
+	target_acceleration *= (1.0 -exp(-arrive_slowdown_factor*delta))
 		
 	return target_acceleration
