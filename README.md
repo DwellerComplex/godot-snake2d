@@ -51,6 +51,7 @@ I found the following values to work ok:
 * Arrive Slowdown Distance = 10. Should always be higher than Arrive Distance.
 * Arrive Slowdown Factor = 20.
 * This can be a bit tricky but adjust Max Speed depending on how fast the body moves.
+
 Then adjust the extra properties for damping and compression so that the trail shortens as the snake slows down.
 
 #### Line2D
