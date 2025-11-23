@@ -154,7 +154,7 @@ func update_body(delta: float) -> void:
 	time_contraction += delta * maxf(velocity.length() * contraction_speed_factor, contraction_speed_min)
 	time_wave += delta * maxf(velocity.length() * wave_speed_factor, wave_speed_min)
 	
-	for i:int in range(1, body.size()):
+	for i: int in range(1, body.size()):
 		var body_part: SnakeSprite2D = body[i]
 		var body_part_center: Vector2 = body_center_line[i]
 		var body_part_ahead_center: Vector2 = body_center_line[i-1]
